@@ -1,6 +1,5 @@
 package com.buddhi.multidatasource;
 
-import com.buddhi.multidatasource.api.model.ApiUser;
 import com.buddhi.multidatasource.api.repository.ApiUserRepository;
 import com.buddhi.multidatasource.einsure.repository.QuoteRepository;
 import org.junit.Test;
@@ -10,9 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import javax.sql.DataSource;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
