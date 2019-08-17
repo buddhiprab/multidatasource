@@ -2,6 +2,7 @@ package com.buddhi.multidatasource;
 
 import com.buddhi.multidatasource.api.model.ApiUser;
 import com.buddhi.multidatasource.api.repository.ApiUserRepository;
+import com.buddhi.multidatasource.einsure.repository.QuoteRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +19,11 @@ import static org.junit.Assert.*;
 public class MultidatasourceApplicationTests {
 
 	@Autowired
+	private ApplicationContext context;
+	@Autowired
 	ApiUserRepository apiUserRepository;
 	@Autowired
-	private ApplicationContext context;
-
+	QuoteRepository quoteRepository;
 
 	/*@Test
 	public void contextLoads() {
@@ -31,5 +33,10 @@ public class MultidatasourceApplicationTests {
 	@Test
 	public void getApiUser() {
 		assertEquals(1l, apiUserRepository.findById(1l).get().getId().longValue());
+	}
+
+	@Test
+	public void getQuote() {
+		assertEquals(1l, quoteRepository.findById(1l).get().getId().longValue());
 	}
 }

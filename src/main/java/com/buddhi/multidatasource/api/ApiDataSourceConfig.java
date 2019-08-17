@@ -1,5 +1,6 @@
 package com.buddhi.multidatasource.api;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -21,11 +22,11 @@ import javax.sql.DataSource;
         basePackages = {"com.buddhi.multidatasource.api.repository"}
 )
 public class ApiDataSourceConfig {
-    /*@Primary
     @Bean(name = "apiDataSource")
+    @Primary
     @ConfigurationProperties(prefix = "datasource.apidb")
-    public DataSource apiDataSource() {
-        return DataSourceBuilder.create().build();
+    public HikariDataSource dataSource() {
+        return DataSourceBuilder.create().type(HikariDataSource.class).build();
     }
 
     @Primary
@@ -39,10 +40,10 @@ public class ApiDataSourceConfig {
                 .packages("com.buddhi.multidatasource.api.model")
                 .persistenceUnit("apidb")
                 .build();
-    }*/
+    }
 
+    /*@Bean
     @Primary
-    @Bean
     @ConfigurationProperties(prefix="datasource.apidb")
     public DataSourceProperties apiDataSourceProperties() {
         return new DataSourceProperties();
@@ -69,11 +70,11 @@ public class ApiDataSourceConfig {
         factory.setPackagesToScan(new String[]{"com.buddhi.multidatasource.api.model"});
         factory.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
 
-        /*Properties jpaProperties = new Properties();
+        *//*Properties jpaProperties = new Properties();
         jpaProperties.put("hibernate.hbm2ddl.auto", env.getProperty("spring.jpa.hibernate.ddl-auto"));
         jpaProperties.put("hibernate.show-sql", env.getProperty("spring.jpa.show-sql"));
-        factory.setJpaProperties(jpaProperties);*/
+        factory.setJpaProperties(jpaProperties);*//*
 
         return factory;
-    }
+    }*/
 }
