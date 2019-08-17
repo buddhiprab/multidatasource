@@ -1,4 +1,4 @@
-package com.buddhi.multidatasource.model;
+package com.buddhi.multidatasource.einsure.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,17 +6,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import java.util.Date;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @Entity
 @Builder
-@Table(name = "api_users")
-public class ApiUser {
+@Table(name = "quotes")
+public class Quote {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name;
+    private String quote_ref;
 }
