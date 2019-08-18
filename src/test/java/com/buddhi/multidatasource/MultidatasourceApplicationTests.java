@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.junit4.SpringRunner;
+import sun.tools.java.Environment;
 
 import static org.junit.Assert.assertEquals;
 
@@ -21,6 +22,8 @@ public class MultidatasourceApplicationTests {
 	ApiUserRepository apiUserRepository;
 	@Autowired
 	QuoteRepository quoteRepository;
+	@Autowired
+	Environment env;
 
 	/*@Test
 	public void contextLoads() {

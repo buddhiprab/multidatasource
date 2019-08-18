@@ -1,21 +1,9 @@
 package com.buddhi.multidatasource.api;
 
-import com.zaxxer.hikari.HikariDataSource;
-import org.apache.catalina.Context;
-import org.apache.tomcat.util.descriptor.web.ContextResource;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.jdbc.DataSourceBuilder;
-import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
-import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
-import org.springframework.boot.web.embedded.tomcat.TomcatWebServer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.context.annotation.Primary;
-import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
-import org.springframework.jdbc.datasource.lookup.JndiDataSourceLookup;
 import org.springframework.jndi.JndiObjectFactoryBean;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
@@ -23,7 +11,7 @@ import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import javax.naming.NamingException;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
-import java.io.IOException;
+import java.util.Properties;
 
 
 @Configuration
@@ -32,28 +20,7 @@ import java.io.IOException;
         basePackages = {"com.buddhi.multidatasource.api.repository"}
 )
 public class ApiDataSourceConfig {
-    @Bean(name = "tomcatFactory")
-    public TomcatServletWebServerFactory tomcatFactory() {
-        return new TomcatServletWebServerFactory() {
-            @Override
-            protected TomcatWebServer getTomcatWebServer(org.apache.catalina.startup.Tomcat tomcat) {
-                tomcat.enableNaming();
-                return super.getTomcatWebServer(tomcat);
-            }
-            @Override
-            protected void postProcessContext(Context context) {
-                ContextResource resource = new ContextResource();
-                resource.setName("jdbc/apidb");
-                resource.setType(HikariDataSource.class.getName());
-                //resource.setProperty("factory", "org.apache.tomcat.jdbc.pool.DataSourceFactory");
-                resource.setProperty("driverClassName", "com.mysql.jdbc.Driver");
-                resource.setProperty("url", "jdbc:mysql://localhost:3306/apidb?useSSL=false");
-                resource.setProperty("password", "root");
-                resource.setProperty("username", "Mouse123");
-                context.getNamingResources().addResource(resource);
-            }
-        };
-    }
+
     /*@Bean(name = "apiDataSource")
     @Primary
     @ConfigurationProperties(prefix = "datasource.apidb")
@@ -69,7 +36,17 @@ public class ApiDataSourceConfig {
         return dataSource;
     }*/
 
-
+    @Bean(name = "apiJndiDataSource", destroyMethod = "")
+    @Primary
+    public DataSource jndiDataSource() throws IllegalArgumentException, NamingException {
+        JndiObjectFactoryBean bean = new JndiObjectFactoryBean();
+        bean.setJndiName("java:comp/env/jdbc/apidb");
+        bean.setProxyInterface(DataSource.class);
+        bean.setExpectedType(DataSource.class);
+        bean.setLookupOnStartup(false);
+        bean.afterPropertiesSet();
+        return (DataSource)bean.getObject();
+    }
     /*@Primary
     @Bean(name = "apiEntityManagerFactory")
     public LocalContainerEntityManagerFactoryBean apiEntityManagerFactory(
@@ -83,8 +60,8 @@ public class ApiDataSourceConfig {
                 .build();
     }*/
 
-    @Primary
     @Bean(name = "apiEntityManagerFactory")
+    @Primary
     public EntityManagerFactory entityManagerFactory() throws NamingException {
 
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
@@ -93,13 +70,18 @@ public class ApiDataSourceConfig {
         LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
         factory.setJpaVendorAdapter(vendorAdapter);
         factory.setPackagesToScan("com.buddhi.multidatasource.api.model");
+        factory.setJpaProperties(additionalProperties());
         factory.setDataSource(jndiDataSource());
         factory.afterPropertiesSet();
 
         return factory.getObject();
     }
 
-
+    Properties additionalProperties() {
+        Properties properties = new Properties();
+        properties.setProperty("hibernate.dialect", "org.hibernate.dialect.MySQLDialect");
+        return properties;
+    }
     /*@Bean
     @Primary
     @ConfigurationProperties(prefix="datasource.apidb")
@@ -135,15 +117,4 @@ public class ApiDataSourceConfig {
 
         return factory;
     }*/
-    @Bean(name = "apiJndiDataSource", destroyMethod = "")
-    @DependsOn(value = {"tomcatFactory"})
-    @Primary
-    public DataSource jndiDataSource() throws IllegalArgumentException, NamingException{
-        JndiObjectFactoryBean bean = new JndiObjectFactoryBean();
-        bean.setJndiName("java:comp/env/jdbc/apidb");
-        bean.setProxyInterface(DataSource.class);
-        bean.setLookupOnStartup(false);
-//        bean.afterPropertiesSet();
-        return (DataSource)bean.getObject();
-    }
 }
